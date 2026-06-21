@@ -7,5 +7,4 @@ router = APIRouter()
 def first():
     return 'Ola mundo, Hello world'
 
-
-app.include_router(router)    
+app.include_router(router)
