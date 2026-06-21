@@ -15,3 +15,14 @@ DB_PASSWORD=minha_senha_secreta_123
 DB_NAME=meu_banco_de_dados
 API_KEY=9a8b7c6d5e4f3g2h1i
 PORT=3000
+
+
+PASSO A PASSO DO PROJETO?
+1) vamos criar .env variaveis de ambiente de configuração para dados sensiveis.Não obrigatorio,mas e uma boa pratica.
+
+2) Passo vamos criar a conexão com banco de dados;
+O pacote database?
+ - A classe database.py: E a famosa classe engessada e puramente "control C + Control V" E Puramente para a conexão do banco de dados.Trazendo a realidade do java/Spring Boot, Aqui seria semelhante la so que unica diferença que essa parte da conexão o Spring ja cria automaticamente lendo o application.properties, e não no extends JpaRepository (que serve so para operações de crud). Aqui e tudo manualmente feito como no java legado.
+
+
+ 3)
