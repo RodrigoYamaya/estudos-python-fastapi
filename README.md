@@ -75,7 +75,7 @@ No Python com FastAPI, **não criamos essa interface extra de conversão**. Nós
 Essa configuração é o nosso `@Mapper` embutido. Ela dá a permissão de conversão e avisa o Pydantic: *"Atenção, o objeto que vai chegar aqui não é um JSON padrão. É uma classe pesada que veio do banco de dados (SQLAlchemy). Você está autorizado a 'sugar' os dados lendo os atributos desta classe diretamente."*
 
 
-4) passo vamos criar o equivalente aos DTOS RESPONSE E REQUEST NO JAVA que classe validar entrada e saida dos dados.Observação Que otima boa pratica jamais expor a classe que criou o banco de dados,usamos Dtos filtrar o que deve ser exposto entrada dados e saida; Pacote Schemas que seria O DTO(CLASSE Records no java)
+4) passo vamos criar o equivalente aos "DTOS RESPONSE E REQUEST NO JAVA" que classe validar entrada e saida dos dados.Observação Que otima boa pratica jamais expor a classe que criou o banco de dados,usamos Dtos filtrar o que deve ser exposto entrada dados e saida; Pacote Schemas que seria O DTO(CLASSE Records no java)
 
 Exemplo: vamos criar uma class response e request igual no java;
 
@@ -88,3 +88,38 @@ from models.pet_model import PetModel
 Base.metadata.create_all(bind=engine)
 
 
+5) passo vamos criar Nosso repository manualmente;
+
+Obs: ### O que o `model_dump()`?
+Resumo : O model_dump() pegar objeto no Pydantic que dtos e transformar em dicionario dict(hashmap);
+
+
+Para entender o motivo, precisamos visualizar a jornada do dado:
+
+1. **A Chegada da Internet (JSON):** O Frontend ou o Postman enviam os dados no formato **JSON**. O JSON é puramente texto (uma String) usado como linguagem universal na internet.
+
+2. **A Transformação e Validação (Pydantic):** O Python puro não consegue fazer validações complexas em um texto. Então, o FastAPI pega esse JSON e joga no Pydantic. O Pydantic transforma esse texto em um **Objeto DTO** (a nossa classe `PetRequestSchema`), garantindo que todas as regras de negócio foram respeitadas.
+
+3. **A Preparação para o Banco (`model_dump()`):** 
+   Agora temos um Objeto Pydantic validado na memória. O problema é que o SQLAlchemy (o ORM do banco de dados) não sabe ler objetos do Pydantic. 
+   É aqui que chamamos o `model_dump()`. Ele pega esse Objeto DTO e o "rebaixa" para um **Dicionário nativo do Python (`dict`)**, que funciona exatamente como um `HashMap` (pares de chaves e valores).
+
+4. **A Injeção no Banco (`**`):**
+   Como o dicionário (`dict`) é a estrutura nativa mais rápida e compreendida pelo Python, nós conseguimos usar os dois asteriscos (`**`) para desempacotar esse dicionário e injetar os dados diretamente na nossa Entidade do SQLAlchemy, salvando no MySQL.
+
+Exemplo: Abaixo
+
+
+ [Cliente envia um JSON]
+       │
+       ▼
+1. TEXTO BRUTO (JSON): '{"nome": "Teclado", "preco": 350.0}'
+       │
+       ▼ (O framework valida e transforma em Objeto)
+2. OBJETO PYDANTIC (DTO): ProdutoDTO(nome="Teclado", preco=350.0)
+       │
+       ▼ (Aqui entra o seu código ou o banco)
+3. DICIONÁRIO PYTHON (HashMap): {"nome": "Teclado", "preco": 350.0}  <-- model_dump() faz isso!
+       │
+       ▼ (O Python converte de volta para enviar ao cliente)
+4. TEXTO BRUTO (JSON): '{"nome": "Teclado", "preco": 350.0}'
