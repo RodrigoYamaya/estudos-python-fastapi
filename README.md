@@ -123,3 +123,11 @@ Exemplo: Abaixo
        │
        ▼ (O Python converte de volta para enviar ao cliente)
 4. TEXTO BRUTO (JSON): '{"nome": "Teclado", "preco": 350.0}'
+
+
+6) vamos criar a service com as regras negocio;
+
+  - aqui vamos criar as possiveis regras negocio e possiveis validações;
+
+7) vamos etapa final routes(controller) que vai cuidar dos end points;
+   
