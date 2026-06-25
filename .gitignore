@@ -1,0 +1,10 @@
+# Ignora as pastas de cache do Python
+__pycache__/
+*.pyc
+
+# Ignora o ambiente virtual (nunca suba o venv pro GitHub!)
+venv/
+env/
+
+# Ignora o arquivo de variáveis de ambiente (para não vazar senhas)
+.env
